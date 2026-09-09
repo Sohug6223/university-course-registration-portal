@@ -1,42 +1,177 @@
-# .
+# University Course Registration Portal
 
-This template should help get you started developing with Vue 3 in Vite.
+A web-based university course registration system designed to simplify course enrollment, prerequisite checking, section management, academic result management, and student scheduling.
 
-## Recommended IDE Setup
+## Project Overview
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+The **University Course Registration Portal** provides separate portals for **Students** and **Administrators**.
 
-## Recommended Browser Setup
+Students can view their academic information, check available courses, register for courses, view enrolled courses, class routines, results, and university notices.
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+Administrators can manage students, departments, batches, courses, sections, prerequisites, class schedules, results, enrollments, and notices from a centralized dashboard.
 
-## Type Support for `.vue` Imports in TS
+## Key Features
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+### Student Portal
 
-## Customize configuration
+* Secure student login and authentication
+* Student dashboard
+* View and update profile
+* Course registration
+* Prerequisite validation
+* Current semester completion validation
+* View enrolled courses
+* View class routine
+* View academic results
+* GPA and CGPA calculation
+* View university notices
+* Change password
+* Secure logout
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+### Admin Portal
 
-## Project Setup
+* Admin authentication
+* Admin dashboard
+* Student management
+* Department management
+* Batch management
+* Course management
+* Section management
+* Prerequisite management
+* Class schedule management
+* Result management
+* Enrollment management
+* Notice management
+* Profile management
+* Password management
 
-```sh
-npm install
+### Security & Validation
+
+* Laravel Sanctum authentication
+* Role-based access control
+* Protected frontend routes
+* Admin-only and student-only route protection
+* Case-sensitive User ID authentication
+* Server-side request validation
+* Secure password hashing
+* Protected API endpoints
+
+## Technology Stack
+
+### Frontend
+
+* Vue 3
+* TypeScript
+* Vite
+* Vue Router
+* Axios
+* Lucide Vue Next
+* HTML5
+* CSS3
+
+### Backend
+
+* Laravel
+* PHP
+* Laravel Sanctum
+* RESTful API
+
+### Database
+
+* MySQL
+
+### Development Tools
+
+* Git
+* GitHub
+* VS Code
+* Laragon
+
+
+
+## Installation & Setup
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/Sohug6223/university-course-registration-portal.git
+cd university-course-registration-portal
 ```
 
-### Compile and Hot-Reload for Development
+### 2. Frontend Setup
 
-```sh
+```bash
+npm install
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+### 3. Backend Setup
 
-```sh
-npm run build
+```bash
+cd backend
+composer install
 ```
+
+Create the environment file:
+
+```bash
+cp .env.example .env
+```
+
+Generate the application key:
+
+```bash
+php artisan key:generate
+```
+
+Configure the database and other environment variables in `.env`.
+
+Run migrations:
+
+```bash
+php artisan migrate
+```
+
+Run seeders if required:
+
+```bash
+php artisan db:seed
+```
+
+Start the Laravel server:
+
+```bash
+php artisan serve
+```
+
+## Environment Configuration
+
+The `.env` file is intentionally excluded from version control.
+
+Use `.env.example` as the configuration template.
+
+## Project Status
+
+**Core modules completed and tested.**
+
+The system currently includes authentication, role-based route protection, student and admin portals, course registration, academic management, and notice management.
+
+## Team
+
+**Project:** University Course Registration Portal
+
+**Course:** Software Engineering Laboratory
+
+**University:** City University
+
+### Student
+- User ID: `0282320005101147`
+- Password: Contact project team
+
+### Admin
+- User ID: `ADMIN001`
+- Password: Contact project team
+
+## License
+
+This project is developed for academic purposes.
