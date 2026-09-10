@@ -1354,26 +1354,24 @@ class CourseSeeder extends Seeder
         /* Insert / Update Courses */
 
         foreach ($courses as $course) {
-    Course::updateOrCreate(
-        ['course_code' => $course['course_code']],
-        [
-            'course_name' => $course['course_name'],
-            'department' => $course['department'],
-            'semester' => $course['semester'],
-            'credit' => $course['credit'],
+            Course::updateOrCreate(
+                ['course_code' => $course['course_code']],
+                [
+                    'course_name' => $course['course_name'],
+                    'department_id' => \App\Models\Department::where('code', $course['department'])->value('id'),
+                    'semester' => $course['semester'],
+                    'credit' => $course['credit'],
 
-            // Theory / Lab automatically detect
-            'course_type' => (
-                str_contains(strtolower($course['course_name']), 'lab') ||
-                str_contains(strtolower($course['course_name']), 'laboratory')
-            ) ? 'Lab' : 'Theory',
+                    // Theory / Lab automatically detect
+                    'course_type' => (
+                        str_contains(strtolower($course['course_name']), 'lab') ||
+                        str_contains(strtolower($course['course_name']), 'laboratory')
+                    ) ? 'Lab' : 'Theory',
 
-            'description' => $course['course_name'],
-            'status' => 'Active',
-        ]
-    );
-}
-
- 
+                    'description' => $course['course_name'],
+                    'status' => 'Active',
+                ]
+            );
+        }
     }
 }
