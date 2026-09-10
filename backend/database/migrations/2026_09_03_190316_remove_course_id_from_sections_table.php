@@ -8,18 +8,22 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // 1. Remove old unique index that uses course_id
+        // 1. First remove the foreign key using course_id
+        Schema::table('sections', function (Blueprint $table) {
+            $table->dropForeign(['course_id']);
+        });
+
+        // 2. Then remove the old unique index
         Schema::table('sections', function (Blueprint $table) {
             $table->dropUnique('sections_course_id_section_name_unique');
         });
 
-        // 2. Remove foreign key and course_id column
+        // 3. Now remove course_id column
         Schema::table('sections', function (Blueprint $table) {
-            $table->dropForeign(['course_id']);
             $table->dropColumn('course_id');
         });
 
-        // 3. Add the new unique constraint
+        // 4. Add the new unique constraint
         Schema::table('sections', function (Blueprint $table) {
             $table->unique(['batch_id', 'section_name']);
         });
