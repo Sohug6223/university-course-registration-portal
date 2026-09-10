@@ -9,6 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('sections', function (Blueprint $table) {
+            $table->dropForeign(['course_id']);
             $table->dropColumn('course_id');
         });
 
@@ -21,7 +22,12 @@ return new class extends Migration
     {
         Schema::table('sections', function (Blueprint $table) {
             $table->dropUnique(['batch_id', 'section_name']);
-            $table->unsignedBigInteger('course_id')->nullable()->after('id');
+
+            $table->foreignId('course_id')
+                ->nullable()
+                ->after('id')
+                ->constrained('courses')
+                ->cascadeOnDelete();
         });
     }
 };
