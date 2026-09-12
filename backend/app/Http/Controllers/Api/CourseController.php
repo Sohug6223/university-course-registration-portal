@@ -99,16 +99,22 @@ class CourseController extends Controller
             'success' => true,
 
             // Temporary debugging information
-           'debug' => [
+'debug' => [
     'db' => config('database.default'),
 
     'database' => DB::connection()->getDatabaseName(),
 
     'mysql_config_host' => config('database.connections.mysql.host'),
 
-    'mysql_server' => DB::select(
-        "SELECT @@hostname AS host, @@port AS port, DATABASE() AS db"
-    ),
+    'mysql_server' => DB::select("
+        SELECT
+            @@hostname AS host,
+            @@port AS port,
+            DATABASE() AS db,
+            @@server_uuid AS server_uuid,
+            @@read_only AS read_only,
+            @@super_read_only AS super_read_only
+    "),
 
     'connection_status' => DB::connection()
         ->getPdo()
