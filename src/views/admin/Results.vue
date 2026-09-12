@@ -51,7 +51,15 @@ interface Course {
   course_type?: string;
   status?: string;
 }
-
+interface Department {
+  id: number;
+  code: string;
+  name: string;
+  status: "Active" | "Inactive";
+  student_count: number;
+  batch_count: number;
+  course_count: number;
+}
 interface Result {
   id: number;
   student_id: number;
@@ -102,8 +110,7 @@ const semesters = [
   "8th",
 ];
 
-const departments = ["CSE", "EEE", "BBA", "English"];
-
+const departments = ref<Department[]>([]);
 /*  STATE  */
 
 const results = ref<Result[]>([]);
@@ -165,8 +172,8 @@ const resultToDelete = ref<Result | null>(null);
 const hasManagementFilter = computed(() =>
   Boolean(
     managementSearch.value.trim() ||
-      filterDepartment.value ||
-      filterSemester.value
+    filterDepartment.value ||
+    filterSemester.value
   )
 );
 
@@ -197,6 +204,21 @@ async function loadStudents() {
       response.data.students ?? response.data.data ?? [];
   } catch (error) {
     console.error("Failed to load students:", error);
+  }
+}
+/*  DEPARTMENTS  */
+
+async function loadDepartments() {
+  try {
+    const response = await api.get("/admin/departments");
+
+    departments.value =
+      response.data.departments ??
+      response.data.data ??
+      [];
+  } catch (error) {
+    console.error("Failed to load departments:", error);
+    departments.value = [];
   }
 }
 
@@ -469,8 +491,8 @@ async function searchStudentResult() {
     const cgpa =
       totalCredits > 0
         ? Number(
-            (totalQualityPoints / totalCredits).toFixed(2)
-          )
+          (totalQualityPoints / totalCredits).toFixed(2)
+        )
         : 0;
 
     /*  SUMMARY  */
@@ -761,7 +783,7 @@ async function confirmDelete() {
     if (
       summary.value &&
       summary.value.student.student_id ===
-        deletedStudentId
+      deletedStudentId
     ) {
       await searchStudentResult();
     }
@@ -777,14 +799,14 @@ async function confirmDelete() {
 
 /*  LIFECYCLE  */
 
-onMounted(loadStudents);
+onMounted(() => {
+  loadStudents();
+  loadDepartments();
+});
 </script>
 
 <template>
-  <AdminLayout
-    title="Results"
-    subtitle="Manage student academic results and performance."
-  >
+  <AdminLayout title="Results" subtitle="Manage student academic results and performance.">
     <div class="results-page">
 
       <!--  SUMMARY SEARCH  -->
@@ -805,26 +827,14 @@ onMounted(loadStudents);
         </div>
 
         <div class="student-search">
-          <div
-            class="search-input"
-            :class="{ 'search-error': summarySearchError }"
-          >
+          <div class="search-input" :class="{ 'search-error': summarySearchError }">
             <Search :size="18" />
 
-            <input
-              v-model="summarySearch"
-              type="text"
-              placeholder="Enter Student ID"
-              @input="clearSummaryError"
-              @keyup.enter="searchStudentResult"
-            />
+            <input v-model="summarySearch" type="text" placeholder="Enter Student ID" @input="clearSummaryError"
+              @keyup.enter="searchStudentResult" />
           </div>
 
-          <button
-            class="btn-primary"
-            :disabled="summaryLoading"
-            @click="searchStudentResult"
-          >
+          <button class="btn-primary" :disabled="summaryLoading" @click="searchStudentResult">
             <Search :size="17" />
 
             {{
@@ -835,10 +845,7 @@ onMounted(loadStudents);
           </button>
         </div>
 
-        <div
-          v-if="summarySearchError"
-          class="inline-error"
-        >
+        <div v-if="summarySearchError" class="inline-error">
           <span class="error-dot"></span>
 
           <div>
@@ -855,10 +862,7 @@ onMounted(loadStudents);
 
       <!--  STUDENT SUMMARY  -->
 
-      <section
-        v-if="summary"
-        class="student-summary"
-      >
+      <section v-if="summary" class="student-summary">
         <div class="student-info-card">
           <div class="student-avatar">
             <GraduationCap :size="26" />
@@ -876,9 +880,7 @@ onMounted(loadStudents);
 
               {{ summary.student.department }}
 
-              <template
-                v-if="summary.student.batch_number"
-              >
+              <template v-if="summary.student.batch_number">
                 <span>•</span>
 
                 Batch
@@ -929,17 +931,10 @@ onMounted(loadStudents);
             </div>
           </div>
 
-          <div
-            v-for="semester in summary.semesters"
-            :key="semester.semester"
-            class="semester-block"
-          >
-            <button
-              class="semester-header"
-              @click="
-                toggleSemester(semester.semester)
-              "
-            >
+          <div v-for="semester in summary.semesters" :key="semester.semester" class="semester-block">
+            <button class="semester-header" @click="
+              toggleSemester(semester.semester)
+              ">
               <div>
                 <strong>
                   {{ semester.semester }} Semester
@@ -957,33 +952,20 @@ onMounted(loadStudents);
                   {{ semester.gpa.toFixed(2) }}
                 </b>
 
-                <ChevronUp
-                  v-if="
-                    expandedSemester ===
-                    semester.semester
-                  "
-                  :size="19"
-                />
+                <ChevronUp v-if="
+                  expandedSemester ===
+                  semester.semester
+                " :size="19" />
 
-                <ChevronDown
-                  v-else
-                  :size="19"
-                />
+                <ChevronDown v-else :size="19" />
               </div>
             </button>
 
-            <div
-              v-if="
-                expandedSemester ===
-                semester.semester
-              "
-              class="semester-results"
-            >
-              <div
-                v-for="result in semester.results"
-                :key="result.id"
-                class="semester-result-row"
-              >
+            <div v-if="
+              expandedSemester ===
+              semester.semester
+            " class="semester-results">
+              <div v-for="result in semester.results" :key="result.id" class="semester-result-row">
                 <div>
                   <strong>
                     {{ result.course.course_code }}
@@ -998,12 +980,10 @@ onMounted(loadStudents);
                   {{ result.marks }}
                 </div>
 
-                <div
-                  :class="[
-                    'grade-badge',
-                    gradeClass(result.grade),
-                  ]"
-                >
+                <div :class="[
+                  'grade-badge',
+                  gradeClass(result.grade),
+                ]">
                   {{ result.grade }}
                 </div>
 
@@ -1032,10 +1012,7 @@ onMounted(loadStudents);
             </p>
           </div>
 
-          <button
-            class="btn-primary"
-            @click="openAddModal"
-          >
+          <button class="btn-primary" @click="openAddModal">
             <Plus :size="18" />
             Add Result
           </button>
@@ -1051,12 +1028,8 @@ onMounted(loadStudents);
           <div class="search-filter-box">
             <Search :size="18" />
 
-            <input
-              v-model="managementSearch"
-              type="text"
-              placeholder="Student ID, student name or course..."
-              @keyup.enter="searchManagementResults"
-            />
+            <input v-model="managementSearch" type="text" placeholder="Student ID, student name or course..."
+              @keyup.enter="searchManagementResults" />
           </div>
 
           <select v-model="filterDepartment">
@@ -1064,34 +1037,21 @@ onMounted(loadStudents);
               All Departments
             </option>
 
-            <option
-              v-for="department in departments"
-              :key="department"
-              :value="department"
-            >
-              {{ department }}
+            <option v-for="department in departments" :key="department.id" :value="department.code">
+              {{ department.code }}
             </option>
           </select>
-
           <select v-model="filterSemester">
             <option value="">
               All Semesters
             </option>
 
-            <option
-              v-for="semester in semesters"
-              :key="semester"
-              :value="semester"
-            >
+            <option v-for="semester in semesters" :key="semester" :value="semester">
               {{ semester }}
             </option>
           </select>
 
-          <button
-            class="filter-search-btn"
-            :disabled="loading"
-            @click="searchManagementResults"
-          >
+          <button class="filter-search-btn" :disabled="loading" @click="searchManagementResults">
             <Search :size="16" />
 
             {{
@@ -1101,20 +1061,13 @@ onMounted(loadStudents);
             }}
           </button>
 
-          <button
-            class="clear-filter-btn"
-            title="Clear filters"
-            @click="clearManagementFilters"
-          >
+          <button class="clear-filter-btn" title="Clear filters" @click="clearManagementFilters">
             <RotateCcw :size="16" />
           </button>
         </div>
 
         <div class="panel table-panel">
-          <div
-            v-if="!hasSearchedResults"
-            class="management-empty"
-          >
+          <div v-if="!hasSearchedResults" class="management-empty">
             <div class="management-empty-icon">
               <Search :size="27" />
             </div>
@@ -1129,10 +1082,7 @@ onMounted(loadStudents);
             </p>
           </div>
 
-          <div
-            v-else
-            class="table-wrapper"
-          >
+          <div v-else class="table-wrapper">
             <table class="custom-table">
               <thead>
                 <tr>
@@ -1150,29 +1100,18 @@ onMounted(loadStudents);
 
               <tbody>
                 <tr v-if="loading">
-                  <td
-                    colspan="9"
-                    class="empty-state"
-                  >
+                  <td colspan="9" class="empty-state">
                     Loading results...
                   </td>
                 </tr>
 
-                <tr
-                  v-else-if="!results.length"
-                >
-                  <td
-                    colspan="9"
-                    class="empty-state"
-                  >
+                <tr v-else-if="!results.length">
+                  <td colspan="9" class="empty-state">
                     No results found for the selected filter.
                   </td>
                 </tr>
 
-                <tr
-                  v-for="result in results"
-                  :key="result.id"
-                >
+                <tr v-for="result in results" :key="result.id">
                   <td>
                     <strong>
                       {{
@@ -1218,12 +1157,10 @@ onMounted(loadStudents);
                   </td>
 
                   <td>
-                    <span
-                      :class="[
-                        'grade-badge',
-                        gradeClass(result.grade),
-                      ]"
-                    >
+                    <span :class="[
+                      'grade-badge',
+                      gradeClass(result.grade),
+                    ]">
                       {{ result.grade }}
                     </span>
                   </td>
@@ -1237,37 +1174,27 @@ onMounted(loadStudents);
                   </td>
 
                   <td>
-                    <span
-                      :class="[
-                        'status-badge',
-                        result.status === 'Passed'
-                          ? 'status-passed'
-                          : 'status-failed',
-                      ]"
-                    >
+                    <span :class="[
+                      'status-badge',
+                      result.status === 'Passed'
+                        ? 'status-passed'
+                        : 'status-failed',
+                    ]">
                       {{ result.status }}
                     </span>
                   </td>
 
                   <td>
                     <div class="action-buttons">
-                      <button
-                        class="action-btn edit-btn"
-                        title="Edit marks"
-                        @click="
-                          openEditModal(result)
-                        "
-                      >
+                      <button class="action-btn edit-btn" title="Edit marks" @click="
+                        openEditModal(result)
+                        ">
                         <Edit2 :size="16" />
                       </button>
 
-                      <button
-                        class="action-btn delete-btn"
-                        title="Delete result"
-                        @click="
-                          deleteResult(result)
-                        "
-                      >
+                      <button class="action-btn delete-btn" title="Delete result" @click="
+                        deleteResult(result)
+                        ">
                         <Trash2 :size="16" />
                       </button>
                     </div>
@@ -1282,11 +1209,7 @@ onMounted(loadStudents);
 
     <!--  ADD / EDIT MODAL  -->
 
-    <div
-      v-if="showModal"
-      class="modal-overlay"
-      @click.self="closeModal"
-    >
+    <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
       <div class="result-modal">
 
         <div class="modal-header">
@@ -1308,28 +1231,18 @@ onMounted(loadStudents);
             </p>
           </div>
 
-          <button
-            class="close-btn"
-            @click="closeModal"
-          >
+          <button class="close-btn" @click="closeModal">
             <X :size="20" />
           </button>
         </div>
 
         <!-- EDIT -->
 
-        <form
-          v-if="editingId"
-          @submit.prevent="saveResult"
-        >
+        <form v-if="editingId" @submit.prevent="saveResult">
           <div class="form-group">
             <label>Student ID</label>
 
-            <input
-              v-model="form.student_id"
-              type="text"
-              disabled
-            />
+            <input v-model="form.student_id" type="text" disabled />
           </div>
 
           <div class="selected-student-card">
@@ -1369,11 +1282,7 @@ onMounted(loadStudents);
           <div class="form-group">
             <label>Semester</label>
 
-            <input
-              v-model="editForm.semester"
-              type="text"
-              disabled
-            />
+            <input v-model="editForm.semester" type="text" disabled />
           </div>
 
           <div class="form-group">
@@ -1381,14 +1290,8 @@ onMounted(loadStudents);
               Marks <span>*</span>
             </label>
 
-            <input
-              v-model="editForm.marks"
-              type="number"
-              min="0"
-              max="100"
-              placeholder="Enter marks (0-100)"
-              required
-            />
+            <input v-model="editForm.marks" type="number" min="0" max="100" placeholder="Enter marks (0-100)"
+              required />
 
             <small v-if="errors.marks">
               {{ errors.marks[0] }}
@@ -1396,19 +1299,11 @@ onMounted(loadStudents);
           </div>
 
           <div class="modal-actions">
-            <button
-              type="button"
-              class="btn-secondary"
-              @click="closeModal"
-            >
+            <button type="button" class="btn-secondary" @click="closeModal">
               Cancel
             </button>
 
-            <button
-              type="submit"
-              class="btn-primary"
-              :disabled="saving"
-            >
+            <button type="submit" class="btn-primary" :disabled="saving">
               {{
                 saving
                   ? "Updating..."
@@ -1420,31 +1315,18 @@ onMounted(loadStudents);
 
         <!-- ADD -->
 
-        <form
-          v-else
-          @submit.prevent="saveResult"
-        >
+        <form v-else @submit.prevent="saveResult">
           <div class="form-group">
             <label>
               Student ID <span>*</span>
             </label>
 
             <div class="student-id-input">
-              <input
-                v-model="form.student_id"
-                type="text"
-                placeholder="Enter Student ID"
-                required
-                @keyup.enter.prevent="
-                  findStudentById
-                "
-              />
+              <input v-model="form.student_id" type="text" placeholder="Enter Student ID" required @keyup.enter.prevent="
+                findStudentById
+              " />
 
-              <button
-                type="button"
-                class="find-student-btn"
-                @click="findStudentById"
-              >
+              <button type="button" class="find-student-btn" @click="findStudentById">
                 <Search :size="16" />
                 Find
               </button>
@@ -1455,10 +1337,7 @@ onMounted(loadStudents);
             </small>
           </div>
 
-          <div
-            v-if="selectedStudent"
-            class="selected-student-card"
-          >
+          <div v-if="selectedStudent" class="selected-student-card">
             <div class="selected-student-icon">
               <GraduationCap :size="20" />
             </div>
@@ -1479,12 +1358,7 @@ onMounted(loadStudents);
           <div class="form-group">
             <label>Department</label>
 
-            <input
-              v-model="form.department"
-              type="text"
-              disabled
-              placeholder="Student department"
-            />
+            <input v-model="form.department" type="text" disabled placeholder="Student department" />
           </div>
 
           <div class="form-group">
@@ -1492,21 +1366,12 @@ onMounted(loadStudents);
               Semester <span>*</span>
             </label>
 
-            <select
-              v-model="form.semester"
-              required
-              :disabled="!selectedStudent"
-              @change="handleSemesterChange"
-            >
+            <select v-model="form.semester" required :disabled="!selectedStudent" @change="handleSemesterChange">
               <option value="">
                 Select Semester
               </option>
 
-              <option
-                v-for="semester in semesters"
-                :key="semester"
-                :value="semester"
-              >
+              <option v-for="semester in semesters" :key="semester" :value="semester">
                 {{ semester }}
               </option>
             </select>
@@ -1518,44 +1383,30 @@ onMounted(loadStudents);
 
           <!-- MODE -->
 
-          <div
-            v-if="
-              form.semester &&
-              courses.length
-            "
-            class="course-mode-switch"
-          >
-            <button
-              type="button"
-              :class="{
-                active: !singleCourseMode,
-              }"
-              @click="switchToAllCoursesMode"
-            >
+          <div v-if="
+            form.semester &&
+            courses.length
+          " class="course-mode-switch">
+            <button type="button" :class="{
+              active: !singleCourseMode,
+            }" @click="switchToAllCoursesMode">
               All Courses
             </button>
 
-            <button
-              type="button"
-              :class="{
-                active: singleCourseMode,
-              }"
-              @click="switchToSingleCourseMode"
-            >
+            <button type="button" :class="{
+              active: singleCourseMode,
+            }" @click="switchToSingleCourseMode">
               Individual Course
             </button>
           </div>
 
           <!-- ALL COURSES -->
 
-          <div
-            v-if="
-              form.semester &&
-              courses.length &&
-              !singleCourseMode
-            "
-            class="courses-mark-list"
-          >
+          <div v-if="
+            form.semester &&
+            courses.length &&
+            !singleCourseMode
+          " class="courses-mark-list">
             <div class="courses-list-header">
               <strong>
                 {{ courses.length }} Courses
@@ -1566,11 +1417,7 @@ onMounted(loadStudents);
               </span>
             </div>
 
-            <div
-              v-for="item in courseMarks"
-              :key="item.course.id"
-              class="course-mark-row"
-            >
+            <div v-for="item in courseMarks" :key="item.course.id" class="course-mark-row">
               <div class="course-info">
                 <strong>
                   {{ item.course.course_code }}
@@ -1586,33 +1433,21 @@ onMounted(loadStudents);
                 Credit
               </div>
 
-              <input
-                v-model="item.marks"
-                type="number"
-                min="0"
-                max="100"
-                placeholder="Marks"
-              />
+              <input v-model="item.marks" type="number" min="0" max="100" placeholder="Marks" />
             </div>
 
-            <small
-              v-if="errors.marks"
-              class="course-error"
-            >
+            <small v-if="errors.marks" class="course-error">
               {{ errors.marks[0] }}
             </small>
           </div>
 
           <!-- INDIVIDUAL -->
 
-          <div
-            v-if="
-              form.semester &&
-              courses.length &&
-              singleCourseMode
-            "
-            class="courses-mark-list"
-          >
+          <div v-if="
+            form.semester &&
+            courses.length &&
+            singleCourseMode
+          " class="courses-mark-list">
             <div class="courses-list-header">
               <strong>
                 Select Course
@@ -1623,20 +1458,14 @@ onMounted(loadStudents);
               </span>
             </div>
 
-            <div
-              v-for="item in courseMarks"
-              :key="item.course.id"
-              class="single-course-option"
-              :class="{
-                selected: item.marks !== '',
-              }"
-              @click="
+            <div v-for="item in courseMarks" :key="item.course.id" class="single-course-option" :class="{
+              selected: item.marks !== '',
+            }" @click="
                 courseMarks.forEach(
                   (c) => (c.marks = '')
                 );
-                item.marks = '0';
-              "
-            >
+              item.marks = '0';
+              ">
               <div class="course-info">
                 <strong>
                   {{ item.course.course_code }}
@@ -1648,34 +1477,21 @@ onMounted(loadStudents);
               </div>
 
               <div class="single-course-mark">
-                <input
-                  v-model="item.marks"
-                  type="number"
-                  min="0"
-                  max="100"
-                  placeholder="Marks"
-                  @click.stop
-                />
+                <input v-model="item.marks" type="number" min="0" max="100" placeholder="Marks" @click.stop />
               </div>
             </div>
 
-            <small
-              v-if="errors.course_id"
-              class="course-error"
-            >
+            <small v-if="errors.course_id" class="course-error">
               {{ errors.course_id[0] }}
             </small>
           </div>
 
           <!-- NO COURSE -->
 
-          <div
-            v-if="
-              form.semester &&
-              !courses.length
-            "
-            class="no-course-message"
-          >
+          <div v-if="
+            form.semester &&
+            !courses.length
+          " class="no-course-message">
             <BookOpen :size="20" />
 
             <div>
@@ -1690,24 +1506,15 @@ onMounted(loadStudents);
           </div>
 
           <div class="modal-actions">
-            <button
-              type="button"
-              class="btn-secondary"
-              @click="closeModal"
-            >
+            <button type="button" class="btn-secondary" @click="closeModal">
               Cancel
             </button>
 
-            <button
-              type="submit"
-              class="btn-primary"
-              :disabled="
-                saving ||
-                !selectedStudent ||
-                !form.semester ||
-                !courses.length
-              "
-            >
+            <button type="submit" class="btn-primary" :disabled="saving ||
+              !selectedStudent ||
+              !form.semester ||
+              !courses.length
+              ">
               {{
                 saving
                   ? "Saving..."
@@ -1721,11 +1528,7 @@ onMounted(loadStudents);
 
     <!--  DELETE  -->
 
-    <div
-      v-if="showDeleteModal"
-      class="modal-overlay delete-overlay"
-      @click.self="closeDeleteModal"
-    >
+    <div v-if="showDeleteModal" class="modal-overlay delete-overlay" @click.self="closeDeleteModal">
       <div class="delete-modal">
         <div class="delete-icon">
           <Trash2 :size="23" />
@@ -1749,19 +1552,11 @@ onMounted(loadStudents);
         </p>
 
         <div class="delete-actions">
-          <button
-            class="btn-secondary"
-            :disabled="deleting"
-            @click="closeDeleteModal"
-          >
+          <button class="btn-secondary" :disabled="deleting" @click="closeDeleteModal">
             Cancel
           </button>
 
-          <button
-            class="delete-confirm-btn"
-            :disabled="deleting"
-            @click="confirmDelete"
-          >
+          <button class="delete-confirm-btn" :disabled="deleting" @click="confirmDelete">
             {{
               deleting
                 ? "Deleting..."
