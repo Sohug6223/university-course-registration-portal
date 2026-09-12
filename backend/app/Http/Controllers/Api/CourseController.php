@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Course;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class CourseController extends Controller
 {
@@ -14,6 +16,15 @@ class CourseController extends Controller
      */
     public function index(Request $request)
     {
+           Log::info('COURSE DEBUG', [
+            'db' => config('database.default'),
+            'database' => DB::connection()->getDatabaseName(),
+            'bba_department_id' => Course::where('course_code', 'BBA101')->value('department_id'),
+            'bba_department' => Course::with('department')
+                ->where('course_code', 'BBA101')
+                ->first()?->department?->code,
+        ]);
+ 
         $query = Course::with('department');
 
         // Search
