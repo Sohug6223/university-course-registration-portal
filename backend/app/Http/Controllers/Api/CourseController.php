@@ -12,19 +12,24 @@ use Illuminate\Support\Facades\DB;
 class CourseController extends Controller
 {
     /*
-      Display all courses.
+     * Display all courses.
      */
     public function index(Request $request)
     {
-           Log::info('COURSE DEBUG', [
+        // Temporary production debugging
+        Log::info('COURSE DEBUG', [
             'db' => config('database.default'),
             'database' => DB::connection()->getDatabaseName(),
-            'bba_department_id' => Course::where('course_code', 'BBA101')->value('department_id'),
+            'bba_department_id' => Course::where(
+                'course_code',
+                'BBA101'
+            )->value('department_id'),
+
             'bba_department' => Course::with('department')
                 ->where('course_code', 'BBA101')
                 ->first()?->department?->code,
         ]);
- 
+
         $query = Course::with('department');
 
         // Search
@@ -32,8 +37,15 @@ class CourseController extends Controller
             $search = $request->search;
 
             $query->where(function ($q) use ($search) {
-                $q->where('course_code', 'like', "%{$search}%")
-                  ->orWhere('course_name', 'like', "%{$search}%");
+                $q->where(
+                    'course_code',
+                    'like',
+                    "%{$search}%"
+                )->orWhere(
+                    'course_name',
+                    'like',
+                    "%{$search}%"
+                );
             });
         }
 
@@ -46,12 +58,18 @@ class CourseController extends Controller
 
         // Semester filter
         if ($request->filled('semester')) {
-            $query->where('semester', $request->semester);
+            $query->where(
+                'semester',
+                $request->semester
+            );
         }
 
         // Status filter
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            $query->where(
+                'status',
+                $request->status
+            );
         }
 
         $courses = $query
@@ -79,12 +97,28 @@ class CourseController extends Controller
 
         return response()->json([
             'success' => true,
+
+            // Temporary debugging information
+            'debug' => [
+                'db' => config('database.default'),
+                'database' => DB::connection()->getDatabaseName(),
+
+                'bba_department_id' => Course::where(
+                    'course_code',
+                    'BBA101'
+                )->value('department_id'),
+
+                'bba_department' => Course::with('department')
+                    ->where('course_code', 'BBA101')
+                    ->first()?->department?->code,
+            ],
+
             'courses' => $courses,
         ]);
     }
 
     /*
-      Store a new course.
+     * Store a new course.
      */
     public function store(Request $request)
     {
@@ -103,13 +137,13 @@ class CourseController extends Controller
             ],
 
             /*
-              department is the department CODE
-              received from Vue.
-             
-              Example:
-              CSE
-              Mechanical
-              Textile
+             * department is the department CODE
+             * received from Vue.
+             *
+             * Example:
+             * CSE
+             * Mechanical
+             * Textile
              */
             'department' => [
                 'required',
@@ -162,7 +196,6 @@ class CourseController extends Controller
             ],
         ]);
 
-        
         $departmentId = \App\Models\Department::where(
             'code',
             $validated['department']
@@ -182,7 +215,7 @@ class CourseController extends Controller
     }
 
     /*
-      Display a specific course.
+     * Display a specific course.
      */
     public function show(Course $course)
     {
@@ -206,7 +239,7 @@ class CourseController extends Controller
     }
 
     /*
-      Update a course.
+     * Update a course.
      */
     public function update(Request $request, Course $course)
     {
@@ -276,7 +309,6 @@ class CourseController extends Controller
             ],
         ]);
 
-    
         $departmentId = \App\Models\Department::where(
             'code',
             $validated['department']
@@ -296,7 +328,7 @@ class CourseController extends Controller
     }
 
     /*
-      Delete a course.
+     * Delete a course.
      */
     public function destroy(Course $course)
     {
@@ -308,4 +340,3 @@ class CourseController extends Controller
         ]);
     }
 }
-
