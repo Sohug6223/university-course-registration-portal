@@ -4,10 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Course;
+use App\Models\Department;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
 
 class CourseController extends Controller
 {
@@ -16,20 +15,6 @@ class CourseController extends Controller
      */
     public function index(Request $request)
     {
-        // Temporary production debugging
-        Log::info('COURSE DEBUG', [
-            'db' => config('database.default'),
-            'database' => DB::connection()->getDatabaseName(),
-            'bba_department_id' => Course::where(
-                'course_code',
-                'BBA101'
-            )->value('department_id'),
-
-            'bba_department' => Course::with('department')
-                ->where('course_code', 'BBA101')
-                ->first()?->department?->code,
-        ]);
-
         $query = Course::with('department');
 
         // Search
@@ -83,7 +68,7 @@ class CourseController extends Controller
                     'course_code' => $course->course_code,
                     'course_name' => $course->course_name,
 
-                    // Keep frontend API format unchanged.
+                    // Department code for frontend
                     'department' => $course->department?->code,
 
                     'department_id' => $course->department_id,
@@ -97,70 +82,6 @@ class CourseController extends Controller
 
         return response()->json([
             'success' => true,
-
-            // Temporary debugging information
-'debug' => [
-    'db' => config('database.default'),
-    'database' => DB::connection()->getDatabaseName(),
-
-    'db_host_test' => env('DB_HOST_TEST'),
-
-    'mysql_config_host' => config('database.connections.mysql.host'),
-
-    'current_dns_ip' => gethostbyname('mysql.railway.internal'),
-
-    'resolved_db_ip' => gethostbyname(
-        config('database.connections.mysql.host')
-    ),
-
-    'mysql_server' => DB::select("
-        SELECT
-            @@hostname AS host,
-            @@port AS port,
-            DATABASE() AS db,
-            @@server_uuid AS server_uuid,
-            @@read_only AS read_only,
-            @@super_read_only AS super_read_only
-    "),
-
-    'railway_replica_id' => env('RAILWAY_REPLICA_ID'),
-    'railway_deployment_id' => env('RAILWAY_DEPLOYMENT_ID'),
-    'railway_service_id' => env('RAILWAY_SERVICE_ID'),
-    'railway_environment_id' => env('RAILWAY_ENVIRONMENT_ID'),
-
-    'connection_status' => DB::connection()
-        ->getPdo()
-        ->getAttribute(\PDO::ATTR_CONNECTION_STATUS),
-
-    'bba_department_id' => Course::where(
-        'course_code',
-        'BBA101'
-    )->value('department_id'),
-
-    'bba_department' => Course::with('department')
-        ->where('course_code', 'BBA101')
-        ->first()?->department?->code,
-
-    'raw_bba' => DB::table('courses')
-        ->where('course_code', 'BBA101')
-        ->first(),
-        'http_resolv_conf' => @file_get_contents('/etc/resolv.conf'),
-
-'http_dns_a' => @dns_get_record(
-    'mysql.railway.internal',
-    DNS_A
-),
-
-'http_dns_aaaa' => @dns_get_record(
-    'mysql.railway.internal',
-    DNS_AAAA
-),
-
-'http_getent' => @shell_exec(
-    'getent ahostsv4 mysql.railway.internal 2>&1'
-),
-],
-
             'courses' => $courses,
         ]);
     }
@@ -185,13 +106,8 @@ class CourseController extends Controller
             ],
 
             /*
-             * department is the department CODE
-             * received from Vue.
-             *
-             * Example:
-             * CSE
-             * Mechanical
-             * Textile
+             * Department is received as department CODE
+             * from Vue.
              */
             'department' => [
                 'required',
@@ -244,7 +160,7 @@ class CourseController extends Controller
             ],
         ]);
 
-        $departmentId = \App\Models\Department::where(
+        $departmentId = Department::where(
             'code',
             $validated['department']
         )->value('id');
@@ -357,7 +273,7 @@ class CourseController extends Controller
             ],
         ]);
 
-        $departmentId = \App\Models\Department::where(
+        $departmentId = Department::where(
             'code',
             $validated['department']
         )->value('id');
