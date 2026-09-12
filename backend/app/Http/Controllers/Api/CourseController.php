@@ -103,6 +103,7 @@ class CourseController extends Controller
     'db' => config('database.default'),
 
     'database' => DB::connection()->getDatabaseName(),
+    'db_host_test' => env('DB_HOST_TEST'),
 
  'mysql_config_host' => config('database.connections.mysql.host'),
 
