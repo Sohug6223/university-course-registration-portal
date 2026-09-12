@@ -104,9 +104,13 @@ class CourseController extends Controller
 
     'database' => DB::connection()->getDatabaseName(),
 
-    'mysql_config_host' => config('database.connections.mysql.host'),
+ 'mysql_config_host' => config('database.connections.mysql.host'),
 
-   'mysql_server' => DB::select("
+'resolved_db_ip' => gethostbyname(
+    config('database.connections.mysql.host')
+),
+
+'mysql_server' => DB::select("
     SELECT
         @@hostname AS host,
         @@port AS port,
@@ -115,7 +119,6 @@ class CourseController extends Controller
         @@read_only AS read_only,
         @@super_read_only AS super_read_only
 "),
-
 'railway_replica_id' => env('RAILWAY_REPLICA_ID'),
 
 'railway_deployment_id' => env('RAILWAY_DEPLOYMENT_ID'),
