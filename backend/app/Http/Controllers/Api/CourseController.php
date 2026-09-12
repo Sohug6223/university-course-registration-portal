@@ -111,6 +111,10 @@ class CourseController extends Controller
                 'bba_department' => Course::with('department')
                     ->where('course_code', 'BBA101')
                     ->first()?->department?->code,
+
+                'raw_bba' => DB::table('courses')
+                    ->where('course_code', 'BBA101')
+                    ->first(),
             ],
 
             'courses' => $courses,
