@@ -99,23 +99,34 @@ class CourseController extends Controller
             'success' => true,
 
             // Temporary debugging information
-            'debug' => [
-                'db' => config('database.default'),
-                'database' => DB::connection()->getDatabaseName(),
+           'debug' => [
+    'db' => config('database.default'),
 
-                'bba_department_id' => Course::where(
-                    'course_code',
-                    'BBA101'
-                )->value('department_id'),
+    'database' => DB::connection()->getDatabaseName(),
 
-                'bba_department' => Course::with('department')
-                    ->where('course_code', 'BBA101')
-                    ->first()?->department?->code,
+    'mysql_config_host' => config('database.connections.mysql.host'),
 
-                'raw_bba' => DB::table('courses')
-                    ->where('course_code', 'BBA101')
-                    ->first(),
-            ],
+    'mysql_server' => DB::select(
+        "SELECT @@hostname AS host, @@port AS port, DATABASE() AS db"
+    ),
+
+    'connection_status' => DB::connection()
+        ->getPdo()
+        ->getAttribute(\PDO::ATTR_CONNECTION_STATUS),
+
+    'bba_department_id' => Course::where(
+        'course_code',
+        'BBA101'
+    )->value('department_id'),
+
+    'bba_department' => Course::with('department')
+        ->where('course_code', 'BBA101')
+        ->first()?->department?->code,
+
+    'raw_bba' => DB::table('courses')
+        ->where('course_code', 'BBA101')
+        ->first(),
+],
 
             'courses' => $courses,
         ]);
