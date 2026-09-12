@@ -106,15 +106,23 @@ class CourseController extends Controller
 
     'mysql_config_host' => config('database.connections.mysql.host'),
 
-    'mysql_server' => DB::select("
-        SELECT
-            @@hostname AS host,
-            @@port AS port,
-            DATABASE() AS db,
-            @@server_uuid AS server_uuid,
-            @@read_only AS read_only,
-            @@super_read_only AS super_read_only
-    "),
+   'mysql_server' => DB::select("
+    SELECT
+        @@hostname AS host,
+        @@port AS port,
+        DATABASE() AS db,
+        @@server_uuid AS server_uuid,
+        @@read_only AS read_only,
+        @@super_read_only AS super_read_only
+"),
+
+'railway_replica_id' => env('RAILWAY_REPLICA_ID'),
+
+'railway_deployment_id' => env('RAILWAY_DEPLOYMENT_ID'),
+
+'railway_service_id' => env('RAILWAY_SERVICE_ID'),
+
+'railway_environment_id' => env('RAILWAY_ENVIRONMENT_ID'),
 
     'connection_status' => DB::connection()
         ->getPdo()
