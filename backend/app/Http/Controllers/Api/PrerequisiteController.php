@@ -60,29 +60,29 @@ class PrerequisiteController extends Controller
         );
 
         if (
-            $course->department !==
-            $prerequisiteCourse->department
+            (int) $course->department_id !==
+            (int) $prerequisiteCourse->department_id
         ) {
             return response()->json([
                 'success' => false,
                 'message' =>
-                    'Prerequisite course must belong to the same department.',
+                'Prerequisite course must belong to the same department.',
             ], 422);
         }
 
         $exists = Prerequisite::where([
             'course_id' =>
-                $validated['course_id'],
+            $validated['course_id'],
 
             'prerequisite_course_id' =>
-                $validated['prerequisite_course_id'],
+            $validated['prerequisite_course_id'],
         ])->exists();
 
         if ($exists) {
             return response()->json([
                 'success' => false,
                 'message' =>
-                    'This prerequisite already exists.',
+                'This prerequisite already exists.',
             ], 422);
         }
 
@@ -98,7 +98,7 @@ class PrerequisiteController extends Controller
         return response()->json([
             'success' => true,
             'message' =>
-                'Prerequisite added successfully.',
+            'Prerequisite added successfully.',
             'prerequisite' => $prerequisite,
         ], 201);
     }
@@ -144,13 +144,13 @@ class PrerequisiteController extends Controller
         );
 
         if (
-            $course->department !==
-            $prerequisiteCourse->department
+            (int) $course->department_id !==
+            (int) $prerequisiteCourse->department_id
         ) {
             return response()->json([
                 'success' => false,
                 'message' =>
-                    'Prerequisite course must belong to the same department.',
+                'Prerequisite course must belong to the same department.',
             ], 422);
         }
 
@@ -173,7 +173,7 @@ class PrerequisiteController extends Controller
             return response()->json([
                 'success' => false,
                 'message' =>
-                    'This prerequisite already exists.',
+                'This prerequisite already exists.',
             ], 422);
         }
 
@@ -187,7 +187,7 @@ class PrerequisiteController extends Controller
         return response()->json([
             'success' => true,
             'message' =>
-                'Prerequisite updated successfully.',
+            'Prerequisite updated successfully.',
             'prerequisite' => $prerequisite,
         ]);
     }
@@ -200,7 +200,7 @@ class PrerequisiteController extends Controller
         return response()->json([
             'success' => true,
             'message' =>
-                'Prerequisite deleted successfully.',
+            'Prerequisite deleted successfully.',
         ]);
     }
 }

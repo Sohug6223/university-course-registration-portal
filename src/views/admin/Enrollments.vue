@@ -157,6 +157,7 @@ const searchingStudent = ref(false);
 const saving = ref(false);
 const loadingSectionCounts = ref(false);
 const loadingRestore = ref(false);
+const loadingEnrollmentCourses = ref(false);
 
 const showAddModal = ref(false);
 const showEditModal = ref(false);
@@ -1208,6 +1209,47 @@ async function loadStudentInfo() {
   }
 }
 
+async function loadEnrollmentCourses() {
+  if (!student.value || !enrollmentSemester.value) {
+    courses.value = [];
+    selectedCourses.value = [];
+    return;
+  }
+
+  loadingEnrollmentCourses.value = true;
+  selectedCourses.value = [];
+
+  try {
+    const { data } = await api.get(
+      "/admin/courses",
+      {
+        params: {
+          department: departmentCode(student.value.department),
+          semester: enrollmentSemester.value,
+        },
+      }
+    );
+
+    courses.value = Array.isArray(data?.courses)
+      ? data.courses
+      : [];
+  } catch (e) {
+    courses.value = [];
+    selectedCourses.value = [];
+
+    notify(
+      errorMessage(
+        e,
+        "Failed to load courses for selected semester."
+      ),
+      "error"
+    );
+  } finally {
+    loadingEnrollmentCourses.value = false;
+  }
+}
+
+
 
 /*  COURSE SELECTION  */
 
@@ -2052,7 +2094,18 @@ onMounted(async () => {
 
             <div v-if="student" class="form-group">
               <label>Enrollment Semester</label>
-              <input v-model="enrollmentSemester" readonly />
+
+              <select
+                  v-model="enrollmentSemester"
+                  :disabled="loadingEnrollmentCourses"
+                  @change="loadEnrollmentCourses"
+                >
+                <option value="">Select Semester</option>
+
+                <option v-for="semester in semesters" :key="semester" :value="semester">
+                  {{ semester }}
+                </option>
+              </select>
             </div>
 
             <div v-if="student" class="course-section">
@@ -2065,7 +2118,12 @@ onMounted(async () => {
                 <span>{{ selectedCourses.length }} selected</span>
               </div>
 
-              <div v-if="courses.length" class="course-list">
+              <div v-if="loadingEnrollmentCourses" class="empty-course">
+                <BookOpen :size="25" />
+                <p>Loading courses...</p>
+              </div>
+
+              <div v-else-if="courses.length" class="course-list">
                 <div v-for="course in courses" :key="course.id" class="course-item" :class="{
                   selected: selectedCourseIds.includes(course.id),
                 }">

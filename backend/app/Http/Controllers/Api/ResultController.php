@@ -125,12 +125,12 @@ class ResultController extends Controller
          Department Check
         */
 
-        if ($student->department !== $course->department) {
-            return response()->json([
-                'message' =>
-                    'The selected course does not belong to the student department.',
-            ], 422);
-        }
+      if ($student->department !== $course->department?->code) {
+    return response()->json([
+        'message' =>
+            'The selected course does not belong to the student department.',
+    ], 422);
+}
 
         /*
          Course Semester Check
@@ -342,12 +342,12 @@ class ResultController extends Controller
          Department Check
         */
 
-        if ($student->department !== $course->department) {
-            return response()->json([
-                'message' =>
-                    'The selected course does not belong to the student department.',
-            ], 422);
-        }
+     if ($student->department !== $course->department?->code) {
+    return response()->json([
+        'message' =>
+            'The selected course does not belong to the student department.',
+    ], 422);
+}
 
         /*
          Course Semester Check

@@ -632,28 +632,6 @@ class EnrollmentController extends Controller
             ], 422);
         }
 
-        /*
-        
-         Admin normal enrollment = NEXT semester only
-        
-        */
-
-        $expectedSemester =
-            $this->getExpectedEnrollmentSemester(
-                $student
-            );
-
-        if (
-            !$expectedSemester ||
-            $expectedSemester !==
-            $validated['semester']
-        ) {
-            return response()->json([
-                'success' => false,
-                'message' =>
-                    'Invalid enrollment semester for this student.',
-            ], 422);
-        }
 
         DB::transaction(function () use (
             $validated,
@@ -1469,21 +1447,7 @@ class EnrollmentController extends Controller
         );
     }
 
-    /*
-    
-     Expected Enrollment Semester
-    
-    */
-
-    private function getExpectedEnrollmentSemester(
-        Student $student
-    ): ?string {
-        return $this->nextSemester(
-            $student->batch->current_semester
-        );
-    }
-
-    /*
+ /*
     
      Get Unique Active Students In Section
     
