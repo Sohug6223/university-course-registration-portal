@@ -144,6 +144,21 @@ class CourseController extends Controller
     'raw_bba' => DB::table('courses')
         ->where('course_code', 'BBA101')
         ->first(),
+        'http_resolv_conf' => @file_get_contents('/etc/resolv.conf'),
+
+'http_dns_a' => @dns_get_record(
+    'mysql.railway.internal',
+    DNS_A
+),
+
+'http_dns_aaaa' => @dns_get_record(
+    'mysql.railway.internal',
+    DNS_AAAA
+),
+
+'http_getent' => @shell_exec(
+    'getent ahostsv4 mysql.railway.internal 2>&1'
+),
 ],
 
             'courses' => $courses,
