@@ -1039,7 +1039,7 @@ class StudentEnrollmentController extends Controller
                 $student->id,
 
             'user_id' =>
-                $student->user_id,
+              $student->user?->user_id ?? '',
 
             'name' =>
                 $student->user?->name ?? '',
