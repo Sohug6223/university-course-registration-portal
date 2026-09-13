@@ -155,7 +155,7 @@ class EnrollmentController extends Controller
             return response()->json([
                 'success' => false,
                 'message' =>
-                    'This student is currently in the 8th semester. No next semester is available.',
+                'This student is currently in the 8th semester. No next semester is available.',
             ], 422);
         }
 
@@ -178,7 +178,7 @@ class EnrollmentController extends Controller
             return response()->json([
                 'success' => false,
                 'message' =>
-                    'Student department could not be found.',
+                'Student department could not be found.',
             ], 422);
         }
 
@@ -241,14 +241,21 @@ class EnrollmentController extends Controller
                 */
                 'department' => $student->department,
 
-                'batch' => $student->batch->batch_number,
+                'batch' => [
+                    'id' => $student->batch->id,
+                    'batch_number' => $student->batch->batch_number,
+                    'department' => $student->batch->department,
+                    'start_year' => $student->batch->start_year,
+                    'current_semester' => $student->batch->current_semester,
+                    'status' => $student->batch->status,
+                ],
                 'batch_id' => $student->batch_id,
                 'current_semester' => $currentSemester,
                 'section' => $student->section?->section_name,
             ],
 
             'enrollment_semester' =>
-                $enrollmentSemester,
+            $enrollmentSemester,
 
             'courses' => $courses,
 
@@ -299,7 +306,7 @@ class EnrollmentController extends Controller
             return response()->json([
                 'success' => false,
                 'message' =>
-                    'Student department could not be found.',
+                'Student department could not be found.',
             ], 422);
         }
 
@@ -541,7 +548,7 @@ class EnrollmentController extends Controller
                 'section' => $student->section,
 
                 'current_semester' =>
-                    $student->batch?->current_semester,
+                $student->batch?->current_semester,
             ],
 
             'enrollments' => $enrollments,
@@ -597,7 +604,7 @@ class EnrollmentController extends Controller
             return response()->json([
                 'success' => false,
                 'message' =>
-                    'Student is not assigned to a batch.',
+                'Student is not assigned to a batch.',
             ], 422);
         }
 
@@ -616,7 +623,7 @@ class EnrollmentController extends Controller
             return response()->json([
                 'success' => false,
                 'message' =>
-                    'Student department could not be found.',
+                'Student department could not be found.',
             ], 422);
         }
 
@@ -628,7 +635,7 @@ class EnrollmentController extends Controller
             return response()->json([
                 'success' => false,
                 'message' =>
-                    'The same course cannot be selected more than once.',
+                'The same course cannot be selected more than once.',
             ], 422);
         }
 
@@ -769,21 +776,21 @@ class EnrollmentController extends Controller
 
                 Enrollment::create([
                     'student_id' =>
-                        $student->id,
+                    $student->id,
 
                     'course_id' =>
-                        $course->id,
+                    $course->id,
 
                     'section_id' =>
-                        $section->id,
+                    $section->id,
 
                     'semester' =>
-                        $validated['semester'],
+                    $validated['semester'],
 
                     'status' =>
-                        $existingResult
-                            ? 'Completed'
-                            : 'Active',
+                    $existingResult
+                        ? 'Completed'
+                        : 'Active',
                 ]);
 
                 $this->syncSectionEnrolled(
@@ -795,7 +802,7 @@ class EnrollmentController extends Controller
         return response()->json([
             'success' => true,
             'message' =>
-                'Enrollment completed successfully.',
+            'Enrollment completed successfully.',
         ], 201);
     }
 
@@ -857,7 +864,7 @@ class EnrollmentController extends Controller
             return response()->json([
                 'success' => false,
                 'message' =>
-                    'Student is not assigned to a batch.',
+                'Student is not assigned to a batch.',
             ], 422);
         }
 
@@ -876,7 +883,7 @@ class EnrollmentController extends Controller
             return response()->json([
                 'success' => false,
                 'message' =>
-                    'Student department could not be found.',
+                'Student department could not be found.',
             ], 422);
         }
 
@@ -893,7 +900,7 @@ class EnrollmentController extends Controller
             return response()->json([
                 'success' => false,
                 'message' =>
-                    'This course does not belong to the student department.',
+                'This course does not belong to the student department.',
             ], 422);
         }
 
@@ -910,7 +917,7 @@ class EnrollmentController extends Controller
             return response()->json([
                 'success' => false,
                 'message' =>
-                    'This course does not belong to the selected semester.',
+                'This course does not belong to the selected semester.',
             ], 422);
         }
 
@@ -939,7 +946,7 @@ class EnrollmentController extends Controller
             return response()->json([
                 'success' => false,
                 'message' =>
-                    'Enrollment already exists for this course and semester.',
+                'Enrollment already exists for this course and semester.',
             ], 422);
         }
 
@@ -986,7 +993,7 @@ class EnrollmentController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' =>
-                        'Selected section does not belong to the student batch.',
+                    'Selected section does not belong to the student batch.',
                 ], 422);
             }
         }
@@ -1016,7 +1023,7 @@ class EnrollmentController extends Controller
             return response()->json([
                 'success' => false,
                 'message' =>
-                    'No section is available for this student batch.',
+                'No section is available for this student batch.',
             ], 422);
         }
 
@@ -1049,7 +1056,7 @@ class EnrollmentController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' =>
-                        "Section {$section->section_name} is full.",
+                    "Section {$section->section_name} is full.",
                 ], 422);
             }
         }
@@ -1071,19 +1078,19 @@ class EnrollmentController extends Controller
                 $enrollment =
                     Enrollment::create([
                         'student_id' =>
-                            $student->id,
+                        $student->id,
 
                         'course_id' =>
-                            $course->id,
+                        $course->id,
 
                         'section_id' =>
-                            $section->id,
+                        $section->id,
 
                         'semester' =>
-                            $validated['semester'],
+                        $validated['semester'],
 
                         'status' =>
-                            $status,
+                        $status,
                     ]);
 
                 $this->syncSectionEnrolled(
@@ -1127,18 +1134,18 @@ class EnrollmentController extends Controller
 
             $enrollment->display_status =
                 $grade === 'F'
-                    ? 'Failed'
-                    : 'Completed';
+                ? 'Failed'
+                : 'Completed';
 
             $enrollment->result = [
                 'id' =>
-                    $result->id,
+                $result->id,
 
                 'marks' =>
-                    $result->marks,
+                $result->marks,
 
                 'grade' =>
-                    $result->grade,
+                $result->grade,
             ];
         } else {
             $enrollment->display_status =
@@ -1151,10 +1158,10 @@ class EnrollmentController extends Controller
             'success' => true,
 
             'message' =>
-                'Historical enrollment restored successfully.',
+            'Historical enrollment restored successfully.',
 
             'enrollment' =>
-                $enrollment,
+            $enrollment,
         ], 201);
     }
 
@@ -1203,7 +1210,7 @@ class EnrollmentController extends Controller
             return response()->json([
                 'success' => false,
                 'message' =>
-                    'Selected section does not belong to the student batch.',
+                'Selected section does not belong to the student batch.',
             ], 422);
         }
 
@@ -1243,7 +1250,7 @@ class EnrollmentController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' =>
-                        "Section {$newSection->section_name} is full.",
+                    "Section {$newSection->section_name} is full.",
                 ], 422);
             }
         }
@@ -1256,10 +1263,10 @@ class EnrollmentController extends Controller
         ) {
             $enrollment->update([
                 'section_id' =>
-                    $newSection->id,
+                $newSection->id,
 
                 'status' =>
-                    $validated['status'],
+                $validated['status'],
             ]);
 
             if ($oldSection) {
@@ -1281,20 +1288,20 @@ class EnrollmentController extends Controller
 
         $updatedEnrollment =
             $enrollment
-                ->fresh()
-                ->load([
-                    'student.user',
-                    'student.batch',
-                    'student.section',
+            ->fresh()
+            ->load([
+                'student.user',
+                'student.batch',
+                'student.section',
 
-                    'course' => function ($query) {
-                        $query->with([
-                            'department:id,code,name',
-                        ]);
-                    },
+                'course' => function ($query) {
+                    $query->with([
+                        'department:id,code,name',
+                    ]);
+                },
 
-                    'section',
-                ]);
+                'section',
+            ]);
 
         $this->attachResultStatus(
             collect([$updatedEnrollment])
@@ -1303,9 +1310,9 @@ class EnrollmentController extends Controller
         return response()->json([
             'success' => true,
             'message' =>
-                'Enrollment updated successfully.',
+            'Enrollment updated successfully.',
             'enrollment' =>
-                $updatedEnrollment,
+            $updatedEnrollment,
         ]);
     }
 
@@ -1335,7 +1342,7 @@ class EnrollmentController extends Controller
             return response()->json([
                 'success' => false,
                 'message' =>
-                    'This enrollment cannot be deleted because a result already exists for this course.',
+                'This enrollment cannot be deleted because a result already exists for this course.',
             ], 422);
         }
 
@@ -1357,7 +1364,7 @@ class EnrollmentController extends Controller
         return response()->json([
             'success' => true,
             'message' =>
-                'Enrollment deleted successfully.',
+            'Enrollment deleted successfully.',
         ]);
     }
 
@@ -1424,18 +1431,18 @@ class EnrollmentController extends Controller
 
                     $enrollment->display_status =
                         $grade === 'F'
-                            ? 'Failed'
-                            : 'Completed';
+                        ? 'Failed'
+                        : 'Completed';
 
                     $enrollment->result = [
                         'id' =>
-                            $result->id,
+                        $result->id,
 
                         'marks' =>
-                            $result->marks,
+                        $result->marks,
 
                         'grade' =>
-                            $result->grade,
+                        $result->grade,
                     ];
                 } else {
                     $enrollment->display_status =
@@ -1447,7 +1454,7 @@ class EnrollmentController extends Controller
         );
     }
 
- /*
+    /*
     
      Get Unique Active Students In Section
     
