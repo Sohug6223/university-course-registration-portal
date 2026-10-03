@@ -206,22 +206,56 @@ const navigateTo = (path: string) => {
 .logout-button:hover { background: rgba(255, 255, 255, 0.08); color: white; }
 .sidebar-overlay { display: none; }
 
-/* Mobile Responsive */
-@media (max-width: 900px) {
-  .sidebar {
-    left: auto;
-    right: 0;
-    transform: translateX(100%);
-    transition: transform 0.25s ease-in-out;
+/* Mobile Responsive */ 
+@media (max-width: 900px) { 
+
+  .sidebar { 
+    left: auto; 
+    right: 0; 
+    transform: translateX(100%); 
+    transition: transform 0.25s ease-in-out; 
+    overflow: hidden;
+  } 
+
+  .sidebar.sidebar-open { 
+    transform: translateX(0); 
+  } 
+
+  .sidebar-header { 
+    justify-content: flex-start; 
+    gap: 12px; 
+    padding: 18px 20px;
   }
-  .sidebar.sidebar-open { transform: translateX(0); }
-  .sidebar-header { justify-content: flex-start; gap: 12px; }
-  .sidebar-overlay {
-    display: block;
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.45);
-    z-index: 90;
+
+  .navigation {
+    padding: 12px 12px;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
   }
+
+  .nav-item {
+    padding: 9px 13px;
+    margin-bottom: 3px;
+  }
+
+  .sidebar-bottom {
+    flex-shrink: 0;
+    padding: 10px 12px;
+  }
+
+  .logout-button {
+    padding: 9px 13px;
+  }
+
+  .sidebar-overlay { 
+    display: block; 
+    position: fixed; 
+    inset: 0; 
+    background: rgba(15, 23, 42, 0.45); 
+    z-index: 90; 
+  } 
+
 }
+
 </style>
