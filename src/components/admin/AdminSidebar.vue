@@ -206,56 +206,101 @@ const navigateTo = (path: string) => {
 .logout-button:hover { background: rgba(255, 255, 255, 0.08); color: white; }
 .sidebar-overlay { display: none; }
 
-/* Mobile Responsive */ 
-@media (max-width: 900px) { 
+/* Mobile Responsive */
 
-  .sidebar { 
-    left: auto; 
-    right: 0; 
-    transform: translateX(100%); 
-    transition: transform 0.25s ease-in-out; 
+@media (max-width: 900px) {
+
+  .sidebar {
+    left: auto;
+    right: 0;
+
+    width: 245px;
+    height: 100dvh;
+    min-height: 100dvh;
+
+    transform: translateX(100%);
+    transition: transform 0.25s ease-in-out;
+
     overflow: hidden;
-  } 
+  }
 
-  .sidebar.sidebar-open { 
-    transform: translateX(0); 
-  } 
+  .sidebar.sidebar-open {
+    transform: translateX(0);
+  }
 
-  .sidebar-header { 
-    justify-content: flex-start; 
-    gap: 12px; 
-    padding: 18px 20px;
+  .sidebar-header {
+    justify-content: flex-start;
+    gap: 12px;
+
+    padding: 16px 20px;
+
+    flex-shrink: 0;
   }
 
   .navigation {
-    padding: 12px 12px;
-    overflow-y: auto;
+    padding: 10px 12px;
+
     flex: 1;
     min-height: 0;
+
+    overflow: hidden;
   }
 
   .nav-item {
-    padding: 9px 13px;
-    margin-bottom: 3px;
+    padding: 8px 13px;
+    margin-bottom: 1px;
+
+    min-height: 36px;
   }
 
   .sidebar-bottom {
+    margin-top: auto;
+
+    padding: 9px 12px;
+
     flex-shrink: 0;
-    padding: 10px 12px;
   }
 
   .logout-button {
-    padding: 9px 13px;
+    padding: 8px 13px;
+    min-height: 36px;
   }
 
-  .sidebar-overlay { 
-    display: block; 
-    position: fixed; 
-    inset: 0; 
-    background: rgba(15, 23, 42, 0.45); 
-    z-index: 90; 
-  } 
+  .sidebar-overlay {
+    display: block;
 
+    position: fixed;
+    inset: 0;
+
+    background: rgba(15, 23, 42, 0.45);
+
+    z-index: 90;
+  }
+}
+@media (max-width: 900px) and (max-height: 700px) {
+
+  .sidebar-header {
+    padding: 12px 20px;
+  }
+
+  .navigation {
+    padding: 6px 12px;
+  }
+
+  .nav-item {
+    min-height: 32px;
+    padding: 6px 13px;
+    margin-bottom: 0;
+  }
+
+  .sidebar-bottom {
+    padding: 6px 12px;
+  }
+
+  .logout-button {
+    min-height: 32px;
+    padding: 6px 13px;
+  }
 }
 
 </style>
