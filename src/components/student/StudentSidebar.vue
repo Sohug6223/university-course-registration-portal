@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-
 import {
   Home,
   BookOpen,
@@ -13,9 +12,7 @@ import {
   Bell,
 } from "lucide-vue-next";
 
-const props = defineProps<{
-  sidebarOpen: boolean;
-}>();
+const props = defineProps<{ sidebarOpen: boolean }>();
 
 const emit = defineEmits<{
   close: [];
@@ -24,7 +21,6 @@ const emit = defineEmits<{
 
 const route = useRoute();
 const router = useRouter();
-
 const touchStartX = ref(0);
 
 const isActive = (path: string) => route.path === path;
@@ -35,21 +31,12 @@ const navigateTo = (path: string) => {
 };
 
 const handleTouchStart = (e: TouchEvent) => {
-  const touch = e.changedTouches[0];
-
-  if (touch) {
-    touchStartX.value = touch.screenX;
-  }
+  touchStartX.value = e.changedTouches[0]?.screenX ?? 0;
 };
 
 const handleTouchEnd = (e: TouchEvent) => {
-  const touch = e.changedTouches[0];
-
-  if (!touch) return;
-
-  if (touch.screenX - touchStartX.value > 50) {
-    emit("close");
-  }
+  const x = e.changedTouches[0]?.screenX ?? 0;
+  if (x - touchStartX.value > 50) emit("close");
 };
 </script>
 
@@ -78,7 +65,6 @@ const handleTouchEnd = (e: TouchEvent) => {
 
     <!-- Navigation -->
     <nav class="navigation">
-
       <router-link
         to="/student"
         class="nav-item"
@@ -142,15 +128,11 @@ const handleTouchEnd = (e: TouchEvent) => {
         <User :size="18" />
         <span>Profile</span>
       </button>
-
     </nav>
 
-    <!-- Bottom -->
+    <!-- Sign Out -->
     <div class="sidebar-bottom">
-      <button
-        class="logout-button"
-        @click="emit('logout')"
-      >
+      <button class="logout-button" @click="emit('logout')">
         <LogOut :size="18" />
         <span>Sign Out</span>
       </button>
@@ -164,129 +146,82 @@ const handleTouchEnd = (e: TouchEvent) => {
   min-height: 100vh;
   background: #0a1930;
   color: white;
-
   display: flex;
   flex-direction: column;
-
   position: fixed;
   inset: 0 auto 0 0;
-
   z-index: 100;
-
   transition: transform 0.25s ease;
-
   touch-action: pan-y;
 }
 
 /* Header */
-
 .sidebar-header {
   display: flex;
   align-items: center;
   gap: 12px;
-
   padding: 24px 20px;
-
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-
+  border-bottom: 1px solid rgba(255,255,255,.08);
   flex-shrink: 0;
 }
 
 .logo-box {
   width: 40px;
   height: 40px;
-
   flex-shrink: 0;
-
   background: white;
-
   border-radius: 10px;
-
   padding: 4px;
-
   display: grid;
   place-items: center;
-
   overflow: hidden;
 }
 
 .brand-logo {
   width: 100%;
   height: 100%;
-
   object-fit: contain;
-}
-
-.sidebar-brand {
-  min-width: 0;
 }
 
 .sidebar-brand h2 {
   margin: 0;
-
   font-size: 15px;
-
   white-space: nowrap;
 }
 
 .sidebar-brand span {
   display: block;
-
   margin-top: 3px;
-
   color: #94a3b8;
-
   font-size: 10px;
 }
 
 /* Navigation */
-
 .navigation {
   padding: 20px 12px;
-
   display: flex;
   flex-direction: column;
-
-  overflow-y: auto;
-
   flex: 1;
   min-height: 0;
 }
 
 .nav-item {
   width: 100%;
-
   box-sizing: border-box;
-
   display: flex;
   align-items: center;
-
   gap: 12px;
-
   padding: 11px 13px;
-
   margin-bottom: 5px;
-
   border: 0;
-
   border-radius: 8px;
-
   background: transparent;
-
   color: #cbd5e1;
-
   text-decoration: none;
-
   font-size: 12px;
-
   text-align: left;
-
   cursor: pointer;
-
-  transition:
-    background 0.2s,
-    color 0.2s;
-
+  transition: background .2s, color .2s;
   flex-shrink: 0;
 }
 
@@ -296,67 +231,42 @@ const handleTouchEnd = (e: TouchEvent) => {
   color: white;
 }
 
-/* Bottom */
-
+/* Sign Out */
 .sidebar-bottom {
   margin-top: auto;
-
   padding: 16px 12px;
-
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-
+  border-top: 1px solid rgba(255,255,255,.08);
   flex-shrink: 0;
 }
 
 .logout-button {
   width: 100%;
-
-  box-sizing: border-box;
-
   display: flex;
   align-items: center;
-
   gap: 12px;
-
   padding: 11px 13px;
-
   border: 0;
-
   border-radius: 8px;
-
   background: transparent;
-
   color: #cbd5e1;
-
   font-size: 12px;
-
   cursor: pointer;
 }
 
 .logout-button:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255,255,255,.08);
   color: white;
 }
 
-/* =========================================
-   Mobile Responsive
-   ========================================= */
-
+/* Mobile */
 @media (max-width: 900px) {
-
   .sidebar {
     left: auto;
     right: 0;
-
     width: 245px;
-
     height: 100dvh;
     min-height: 100dvh;
-
     transform: translateX(100%);
-
-    transition: transform 0.25s ease-in-out;
-
     overflow: hidden;
   }
 
@@ -364,94 +274,54 @@ const handleTouchEnd = (e: TouchEvent) => {
     transform: translateX(0);
   }
 
-  /* Mobile Header */
-
   .sidebar-header {
-    justify-content: flex-start;
-
-    gap: 12px;
-
     padding: 16px 20px;
-
-    flex-shrink: 0;
   }
 
-  /* Mobile Navigation */
-
   .navigation {
-    padding: 10px 12px;
-
-    flex: 1;
-
-    min-height: 0;
-
-    /*
-     * No scrolling.
-     * All menu items stay inside
-     * the available mobile height.
-     */
+    padding: 12px;
     overflow: hidden;
   }
 
   .nav-item {
-    gap: 12px;
-
-    padding: 8px 13px;
-
-    margin-bottom: 1px;
-
-    min-height: 36px;
-
-    flex-shrink: 0;
+    padding: 9px 13px;
+    margin-bottom: 3px;
+    min-height: 38px;
   }
 
-  /* Mobile Sign Out */
-
   .sidebar-bottom {
-    margin-top: auto;
-
-    padding: 9px 12px;
-
-    flex-shrink: 0;
+    padding: 10px 12px;
   }
 
   .logout-button {
-    padding: 8px 13px;
-
-    min-height: 36px;
+    padding: 9px 13px;
+    min-height: 38px;
   }
 }
 
-/* =========================================
-   Small Height Mobile
-   ========================================= */
-
+/* Smaller mobile height */
 @media (max-width: 900px) and (max-height: 700px) {
-
   .sidebar-header {
     padding: 12px 20px;
   }
 
   .navigation {
-    padding: 6px 12px;
+    padding: 8px 12px;
   }
 
   .nav-item {
-    min-height: 32px;
-
-    padding: 6px 13px;
-
-    margin-bottom: 0;
+    padding: 7px 13px;
+    margin-bottom: 2px;
+    min-height: 34px;
   }
 
   .sidebar-bottom {
-    padding: 6px 12px;
+    padding: 7px 12px;
   }
 
   .logout-button {
-    min-height: 32px;
-
-    padding: 6px 13px;
+    padding: 7px 13px;
+    min-height: 34px;
   }
 }
 </style>
